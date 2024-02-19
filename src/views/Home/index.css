@@ -1,3 +1,4 @@
+iframe#webpack-dev-server-client-overlay{display:none!important}; /* for window breakpoint Error*/
 
 .dndnode {
     height: 20px;
@@ -48,12 +49,13 @@
   }
 
    .react-flow__node{
-    padding: 0;
-    color: white;
-    text-shadow: 1px 1px 1px black;
-    display: flex;
+    padding: 0 !important;
+    color: white !important;
+    text-shadow: 1px 1px 1px black  !important;
+    display: flex ;
     align-items: center;
     justify-content: center;
+    border: none !important;
    }
 
    .library{
@@ -77,7 +79,7 @@
     display:flex ;
     align-items: center ;
     justify-content: center;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-radius: 3px;
    }
    .circular-node{
