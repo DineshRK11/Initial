@@ -23,7 +23,9 @@ import { shallow } from "zustand/shallow";
 import { toPng } from "html-to-image";
 import { Button } from '@mui/material';
 import AddLibrary from '../../ui-component/Modal/AddLibrary';
+import { useParams } from 'react-router';
 import { useSelector } from 'react-redux';
+import DsTable from '../../ui-component/Table/DSTable';
 
 const selector = (state) => ({
   nodes: state.nodes,
@@ -73,7 +75,7 @@ const nodetypes = {
 };
 const flowKey = "example-flow";
 
-export default function Home() {
+export default function Edit() {
   const {
     nodes,
     edges,
@@ -88,22 +90,26 @@ export default function Home() {
     modal,
     updateModal,
   } = useStore(selector, shallow);
+  const { id } = useParams();
   // const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [openTemplate, setOpenTemplate] = useState(false);
   const [savedTemplate, setSavedTemplate] = useState({});
-  const currentId = useSelector(state=>state?.currentId?.currentId);
-  console.log('currentId', currentId);
-console.log('modal', modal)
-
+  const { isTableOpen } = useSelector(state =>state?.currentId);
+  console.log('isTableOpen', isTableOpen)
+  console.log('id edit', id)
+  
   useEffect(()=>{
-    getModalById(currentId);
-    onSave();
+    getModalById(id);
+  },[id ]);
+  
+  useEffect(()=>{
+    const template = modal?.template;
+    setSavedTemplate(template);
+    onSaveInitial(template); 
     onRestore();
-  },[currentId])
-
-  console.log(openTemplate);
-  console.log(savedTemplate);
+  },[modal])
+  console.log("savedTemplate", savedTemplate);
   //for downloading the circuit and image
   function downloadImage(dataUrl) {
     const a = document.createElement("a");
@@ -228,6 +234,30 @@ console.log('modal', modal)
     }
   }, [reactFlowInstance]);
 
+  const onSaveInitial = useCallback((template) => {
+    localStorage.removeItem(flowKey)
+    if (template) {
+      localStorage.setItem(flowKey, JSON.stringify(template));
+    }
+  }, []);
+  // const onRestoreInitial = useCallback(() => {
+  //   const restoreFlow = async () => {
+  //     const flow = JSON.parse(localStorage.getItem(flowKey));
+  //     if (flow) {
+  //       setSavedTemplate(flow);
+  //       // const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+  //       setNodes(flow.nodes || []);
+  //       setEdges(flow.edges || []);
+  //     }
+  //     else{
+  //       setNodes([])
+  //       setEdges([])
+  //     }
+  //   };
+  //   restoreFlow();
+  // }, []);
+
+
   const onRestore = useCallback(() => {
     const restoreFlow = async () => {
       const flow = JSON.parse(localStorage.getItem(flowKey));
@@ -236,6 +266,9 @@ console.log('modal', modal)
         // const { x = 0, y = 0, zoom = 1 } = flow.viewport;
         setNodes(flow.nodes || []);
         setEdges(flow.edges || []);
+      }else{
+        setNodes([])
+        setEdges([])
       }
     };
     restoreFlow();
@@ -259,6 +292,7 @@ console.log('modal', modal)
 //   console.log('Details', Details)
 // console.log('md', md);
 // updateModal(newMod);
+    // mod.damage_scenarios=[];
     mod.template = {nodes,edges}
     // console.log('nodes', nodes);
     // console.log('edges', edges)
@@ -278,7 +312,7 @@ console.log('modal', modal)
               },
               {
                   name: 'Damage Scenarios - Impact Ratings',
-                  Details:Details
+                  scenes:[]
                }
           ] 
       },
@@ -299,7 +333,8 @@ console.log('modal', modal)
   };
 
   return (
-    <div style={{ width: '100%', height: '90%',border:'1px solid',marginTop:'1.2rem',background:'white' }}>
+    <>
+    {!isTableOpen ? <div style={{ width: '100%', height: '90%',border:'1px solid',marginTop:'1.2rem',background:'white' }}>
         <ReactFlowProvider>
         {/* <div className="reactflow-wrapper" ref={reactFlowWrapper}> */}
           <ReactFlow
@@ -315,11 +350,11 @@ console.log('modal', modal)
             onDrop={onDrop}
             onDragOver={onDragOver}
             fitView
-            style={{
-              " .react-flow__node": {
-                backgroundColor: "black",
-              },
-            }}
+            // style={{
+            //   " .react-flow__node": {
+            //     backgroundColor: "black",
+            //   },
+            // }}
           >
             <Panel
               position="top-left"
@@ -338,7 +373,7 @@ console.log('modal', modal)
                 Restore
               </Button>
               <Button variant="outlined" onClick={handleSave}>
-                Add
+                Add12
               </Button>
               <Button variant="outlined" onClick={handleSaveToModal}>
                 Add to Modal
@@ -364,6 +399,7 @@ console.log('modal', modal)
         setNodes={setNodes}
         setEdges={setEdges}
       />
-    </div>
+    </div>:<DsTable/>}
+    </>
   );
 }

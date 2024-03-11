@@ -2,6 +2,7 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from '../layout/MainLayout';
 import Loadable from '../ui-component/Loadable';
+import Edit from '../views/Edit';
 
 
 // sample page routing
@@ -16,6 +17,10 @@ const MainRoutes = {
         {
             path: '/',
             element: <Home />
+        },
+        {
+            path: '/Modals/:id',
+            element: <Edit />
         },
        
     ]

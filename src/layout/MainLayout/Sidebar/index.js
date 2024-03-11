@@ -19,22 +19,30 @@ import { useEffect, useState } from 'react';
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
 const selector = (state) => ({
+    nodes: state.nodes,
     template: state.template,
+    modals: state.Modals,
+    modal: state.modal,
     fetchAPI: state.fetchAPI,
-  });
+    fetchModals: state.getModals,
+    updateModal: state.updateModal
+
+});
 const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
-   const [properties, setProperties ] = useState([])
-  const { template, fetchAPI } = useStore(selector);
+    const [properties, setProperties] = useState([]);
+    const { nodes, template, fetchAPI, fetchModals, modals, modal, updateModal } = useStore(selector);
     const theme = useTheme();
     const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
-
-    const handleClick = (node)=>{
+    console.log('modals', modals);
+    const handleClick = (node) => {
         // console.log('node', )
-        setProperties(node?.properties)
-    }
+        setProperties(node?.properties);
+    };
     useEffect(() => {
         fetchAPI();
-      }, []);
+        fetchModals();
+    }, []);
+
 
     const drawer = (
         <>
@@ -47,14 +55,21 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                 <PerfectScrollbar
                     component="div"
                     style={{
-                        marginTop:'3rem',
+                        marginTop: '3rem',
                         height: !matchUpMd ? 'calc(100vh - 56px)' : 'calc(100vh - 88px)',
                         paddingLeft: '16px',
                         paddingRight: '16px'
                     }}
                 >
-                    <BrowserCard template={template} handleClick={handleClick}/>
-                    <MenuCard properties={properties}/>
+                    <BrowserCard
+                        template={template}
+                        modals={modals}
+                        handleClick={handleClick}
+                        nodes={nodes}
+                        modal={modal}
+                        updateModal={updateModal}
+                    />
+                    <MenuCard properties={properties} />
                 </PerfectScrollbar>
             </BrowserView>
             <MobileView>
@@ -68,7 +83,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
     const container = window !== undefined ? () => window.document.body : undefined;
 
     return (
-        <Box component="nav" sx={{ flexShrink: { md: 0 }, width: matchUpMd ? drawerWidth : 'auto',}} aria-label="mailbox folders">
+        <Box component="nav" sx={{ flexShrink: { md: 0 }, width: matchUpMd ? drawerWidth : 'auto' }} aria-label="mailbox folders">
             <Drawer
                 container={container}
                 variant={matchUpMd ? 'persistent' : 'temporary'}
@@ -79,11 +94,11 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
                     '& .MuiDrawer-paper': {
                         width: drawerWidth,
                         // background: theme.palette.background.default,
-                        background:'#eef2e2' ,
+                        background: '#eef2e2',
                         color: theme.palette.text.primary,
                         borderRight: 'none',
                         [theme.breakpoints.up('md')]: {
-                            top: navbarHeight,
+                            top: navbarHeight
                         }
                     }
                 }}

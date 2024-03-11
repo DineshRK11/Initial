@@ -1,6 +1,4 @@
-import React, { useEffect
-    // , useState 
-} from "react";
+import React, { useEffect, useState } from "react";
 // import { 
     // Button,Drawer,
     //  IconButton } from "@mui/material";
@@ -25,6 +23,7 @@ import {
     Car,
     TheGraph
   } from 'iconsax-react';
+import AddNewNode from "../../ui-component/Modal/AddNewNode";
 
 const selector = (state) => ({
   sidebarNodes: state.sidebarNodes,
@@ -51,28 +50,21 @@ const iconComponents = {
 
   
 const Components = () => {
-//   const [open, setOpen] = useState(false);
-  const { sidebarNodes, getSidebarNode, 
-    // deleteNode
- } = useStore(selector);
+  const [open, setOpen] = useState(false);
+  const { sidebarNodes, getSidebarNode } = useStore(selector);
   useEffect(() => {
     getSidebarNode();
   }, []);
 
-  //open & closing fn for Dialog
-//   const handleOpen = () => {
-//     setOpen(true);
-//   };
+  // open & closing fn for Dialog
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
-//   const handleClose = () => {
-//     setOpen(false);
-//   };
-//   const handleDelete = (id) => {
-//     deleteNode(id);
-//     setTimeout(() => {
-//       getSidebarNode();
-//     }, 100);
-//   };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
 
 const Icon = ({ name, ...rest }) => {
     const IconComponent = iconComponents[name];
@@ -137,7 +129,7 @@ const Icon = ({ name, ...rest }) => {
               p: "4px",
             }}
           > */}
-            <AddIcon sx={{ fontSize: 20 ,color:'blue' }} />
+            <AddIcon sx={{ fontSize: 20 ,color:'blue',cursor:'pointer' }}   onClick={handleOpen}/>
           {/* </IconButton> */}
       </Box>
       {/* <AddComponentNew
@@ -145,6 +137,11 @@ const Icon = ({ name, ...rest }) => {
         handleClose={handleClose}
         getSidebarNode={getSidebarNode}
       /> */}
+      <AddNewNode
+        open={open}
+        handleClose={handleClose}
+        getSidebarNode={getSidebarNode}
+      />
     </>
   );
 };

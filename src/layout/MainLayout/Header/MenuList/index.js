@@ -5,6 +5,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import Components from '../../../../views/NodeList';
+import ComponentList from '../../../../views/Libraries';
 
 
 export default function MenuList() {
@@ -102,7 +103,7 @@ export default function MenuList() {
                 </Box>
                 {tabs.map((item, i) => (
                   <TabPanel key={i} value={item?.value}>
-                        {item?.label === 'Modal' ? <Components /> : item?.label}
+                        {item?.label === 'Modal' ? <Components /> : item?.label === "MCU's Networks"?<ComponentList/> : item?.label}
                     </TabPanel>
                 ))}
             </TabContext>

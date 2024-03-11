@@ -7,7 +7,8 @@ import { Provider } from 'react-redux';
 // project imports
 import * as serviceWorker from './serviceWorker';
 import App from './App';
-import { store } from './store';
+import { store, persistor } from './store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 // style + assets
 import './assets/scss/style.scss';
@@ -16,9 +17,11 @@ import './assets/scss/style.scss';
 
 ReactDOM.render(
     <Provider store={store}>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <PersistGate loading={null} persistor={persistor}>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </PersistGate>
     </Provider>,
     document.getElementById('root')
 );

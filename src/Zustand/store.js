@@ -7,6 +7,7 @@ import {
 } from 'reactflow';
 
 import axios from "axios";
+import { configuration } from "../services/baseApiService";
 
 const useStore = createWithEqualityFn((set, get) => ({
   nodes:[],
@@ -14,6 +15,10 @@ const useStore = createWithEqualityFn((set, get) => ({
   sidebarNodes:[],
   template:[],
   selectedTemplate:{},
+  Modals:[],
+  modal:{},
+  DamageScenaris:[],
+  scenerio:{},
   
   onNodesChange: (changes) => {
     set({
@@ -31,7 +36,7 @@ const useStore = createWithEqualityFn((set, get) => ({
     });
   },
   fetchAPI: async () => {
-    const res = await axios.get(`http://localhost:4000/template`);
+    const res = await axios.get(`${configuration.apiBaseUrl}template`);
     set({
       template:res.data
     })
@@ -49,14 +54,14 @@ set({
   },
 
   getSidebarNode:async()=>{
-    const res = await axios.get(`http://localhost:4000/sidebarNode`);
+    const res = await axios.get(`${configuration.apiBaseUrl}sidebarNode`);
     set({
      sidebarNodes:res.data,
     })
   },
 
   getTemplate:async(id)=>{
-    const res = await axios.get(`http://localhost:4000/template?id=${id}`);
+    const res = await axios.get(`${configuration.apiBaseUrl}template?id=${id}`);
     set({
       selectedTemplate:res.data[0],
       nodes:res['data'][0]['template']['nodes'],
@@ -64,14 +69,48 @@ set({
     })
   } ,
 
+  getModals:async()=>{
+    const res = await axios.get(`${configuration.apiBaseUrl}Modals`);
+    set({
+   Modals:res.data
+    })
+  } ,
+
+  getModalById:async(id)=>{
+    const res = await axios.get(`${configuration.apiBaseUrl}Modals/${id}`);
+    set({
+   modal:res.data
+    })
+  },
+  getDamageScenarios:async()=>{
+    const res = await axios.get(`${configuration.apiBaseUrl}Damage-scenarios`);
+    set({
+      DamageScenaris:res.data
+    })
+  },
+  getUniqueDamageScenario:async(id)=>{
+    const res = await axios.get(`${configuration.apiBaseUrl}Damage-scenarios/${id}`);
+    set({
+   scenerio:res.data
+    })
+  },
+
   updateTemplate:async(newTemplate)=>{
-    const res = await axios.patch(`http://localhost:4000/template/${newTemplate.id}`,newTemplate);
+    const res = await axios.patch(`${configuration.apiBaseUrl}template/${newTemplate.id}`,newTemplate);
     console.log('res', res)
   },
+
+  updateModal:async(newModal)=>{
+    console.log('newModal', newModal);
+    const res = await axios.patch(`${configuration.apiBaseUrl}Modals/${newModal?.id}`,newModal);
+    console.log('res', res);
+    if(res) return res
+  } ,
+
   
   addTemplate:async(newTemplate)=>{
     try{
-      const res = await axios.post(`http://localhost:4000/template`,newTemplate)
+      const res = await axios.post(`${configuration.apiBaseUrl}template`,newTemplate)
       // console.log('res store', res)
       if(res){
         setTimeout(() => {
@@ -87,6 +126,24 @@ set({
     }
   },
 
+  addDamageScenario:async(newTemplate)=>{
+    console.log('newTemplate', newTemplate)
+    try{
+      const res = await axios.post(`${configuration.apiBaseUrl}Damage-scenarios`,newTemplate)
+      // console.log('res store', res)
+      if(res){
+        setTimeout(() => {
+          // alert("Added Succesfully")
+          // window.location.reload();
+      }, 500);  
+      }
+    }catch(err){
+      // console.log('err', err)
+      setTimeout(() => {
+        alert("Something went Wrong")
+    }, 1000);  
+    }
+  },
   dragAdd:(newNode)=>{
    set(state=>({
     nodes:[
@@ -104,24 +161,41 @@ set({
     }))
    },
   addNewNode:async(newNode)=>{
-    const res = await axios.post(`http://localhost:4000/sidebarNode`,newNode);
+    const res = await axios.post(`${configuration.apiBaseUrl}sidebarNode`,newNode);
    console.log('res', res)
   },
+
   deleteNode:async(id)=>{
-    const res=await axios.delete(`http://localhost:4000/sidebarNode/${id}`)
+    const res=await axios.delete(`${configuration.apiBaseUrl}sidebarNode/${id}`)
     console.log('res', res)
   },
 
   deleteTemplate:async(id)=>{
-    const res=await axios.delete(`http://localhost:4000/template/${id}`)
+    const res=await axios.delete(`${configuration.apiBaseUrl}template/${id}`)
     console.log('res', res)
     if(res){
       setTimeout(() => {
         alert("Deleted Succesfully")
     }); 
     }
-  }
+  },
 
+  //Create New Modal
+ createModal:async(newModal)=>{
+  try{
+    const res = await axios.post(`${configuration.apiBaseUrl}Modals`,newModal)
+    if(res){
+      console.log('res store', res);
+      localStorage.setItem('currentId', res?.data?.id);
+      return res;
+    }
+  }catch(err){
+    console.log('err', err);
+    if(err){
+      alert("Something went Wrong")
+    }
+  }
+},
 
 }));
 
